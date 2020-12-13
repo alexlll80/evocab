@@ -1,0 +1,4 @@
+
+src/dotnet/evocab/.vs/*
+src/dotnet/evocab/*/obj/*
+src/dotnet/evocab/*/bin/*
