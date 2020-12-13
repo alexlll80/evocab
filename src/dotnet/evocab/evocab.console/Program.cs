@@ -15,12 +15,65 @@ namespace evocab.console
     {
         static void Main(string[] args)
         {
+            // https://en.wikipedia.org/wiki/Wikipedia:List_of_English_contractions
+            Words.Init(new List<string>() { 
+                "ll",
+                "re",
+                "m",
+                "aight",
+                "ve",
+                "cause",
+                "er",
+                "ye",
+                "em" ,
+                "day",
+                "n",
+                "clock"
+            });
             var text = ClipboardService.GetText();
             //ExtactWords(text);
             //ExtractSentences(text);
-            ExtractWordsInSentences(text);
+            //ExtractWordsInSentences(text);
+            CalcWordFrequency(text);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        private static void CalcWordFrequency(string text)
+        {
+            EngSentenceParser parser = new EngSentenceParser();
+            EngWordParser wordParser = new EngWordParser();
+            Dictionary<string, int> frequency = new Dictionary<string, int>();
+
+            parser.Init(text);
+            while (!parser.IsEndOfText)
+            {
+                var border = parser.GetNextSentence();
+                if (border != null)
+                {
+                    wordParser.Init(text.GetSubstring(border.Value));
+                    String word;
+                    while (null != (word = wordParser.GetNext()))
+                    {
+                        var wordUpper = word.ToUpperInvariant();
+                        if (!frequency.ContainsKey(wordUpper))
+                        {
+                            frequency.Add(wordUpper, 1);
+                        }
+                        else
+                        {
+                            frequency[wordUpper] = frequency[wordUpper] + 1;
+                        }
+                    }
+                }
+            }
+            _ = frequency
+                .OrderByDescending(e => e.Value)
+                .Select(e => { Console.WriteLine($"{e.Key} ({e.Value})"); return e.Key; })
+                .ToList();
+        }
         /// <summary>
         /// 
         /// </summary>
