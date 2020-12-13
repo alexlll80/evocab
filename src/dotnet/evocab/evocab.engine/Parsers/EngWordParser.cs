@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using evocab.engine.Common.Extensions;
+using System.Text;
 
 namespace evocab.engine.Parsers
 {
@@ -13,6 +14,7 @@ namespace evocab.engine.Parsers
         /// braces {}, apostrophe ('), quotation marks  (" "), and ellipsis (...)
         /// </summary>
         private const string PunctuationMarks = ".?!,;:-()[]{}'\"…";
+        private const string Apostrophe = "`'’";
 
         private readonly StringBuilder _buffer = new StringBuilder(64);
 
@@ -29,6 +31,12 @@ namespace evocab.engine.Parsers
             while (!IsEndOfText 
                 && !char.IsLetter(_text[_currentPos]))
             {
+                var stopWord = StopWordCheck(_currentPos);
+                if (null != stopWord)
+                {
+                    _currentPos += stopWord.Length;
+                    return stopWord;
+                }
                 _currentPos++;
             }
 
@@ -43,7 +51,18 @@ namespace evocab.engine.Parsers
 
                 if (!char.IsLetter(_text[_currentPos]))
                 {
-                    break;
+                    if (Apostrophe.IndexOf(_text[_currentPos]) > -1)
+                    {
+                        int newPosition = 0;
+                        if (_text.IsContraction(_currentPos, out newPosition))
+                        {
+                            _buffer.Append(_text[_currentPos]);
+                        }
+                    }
+                    else
+                    {
+                       break;
+                    }
                 }
 
                 if (char.IsLetter(_text[_currentPos]))
@@ -59,6 +78,16 @@ namespace evocab.engine.Parsers
                 return _buffer.ToString();
             }
 
+            return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentPosition"></param>
+        /// <returns></returns>
+        private string StopWordCheck(int currentPosition)
+        {
             return null;
         }
     }

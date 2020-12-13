@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace evocab.engine.Common.Extensions
+﻿namespace evocab.engine.Common.Extensions
 {
     public static class Punctuation
     {
